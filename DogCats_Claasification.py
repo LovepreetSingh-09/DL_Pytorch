@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from glob import glob
 import os
 import time
+import sys
 
 os.getcwd()
 path = 'Datasets/DogsCats/'
@@ -41,7 +42,8 @@ train = ImageFolder('Datasets/DogsCats/train/', transform)
 valid = ImageFolder('Datasets/DogsCats/valid/', transform)
 print(train.class_to_idx)
 print(train.classes)
-
+print(len(train))
+c=len(train)
 
 def imshow(img):
     print(img.shape)
@@ -57,12 +59,14 @@ print(len(train[50][0]))
 imshow(train[50][0])
 
 train_gn = torch.utils.data.DataLoader(
-    train, shuffle=True, batch_size=16, num_workers=0)
-valid_gn = torch.utils.data.DataLoader(valid, batch_size=16, num_workers=0)
+    train, shuffle=True, batch_size=10, num_workers=0)
+valid_gn = torch.utils.data.DataLoader(valid, batch_size=10, num_workers=0)
 
 dataset_size = {'train': len(train_gn.dataset),
                 'valid': len(valid_gn.dataset)}
 dataloaders = {'train': train_gn, 'valid': valid_gn}
+print(len(train_gn))
+n_batches=len(train_gn)
 
 model = models.resnet18(pretrained=True)
 n_features = model.fc.in_features
@@ -98,7 +102,7 @@ def train_model(model,criterion,optimizer,scheduler,n_epochs=10):
                 model.train(False)
             
             running_loss=0.0
-            correct=0
+            correct=0.0
             b=0
             for data in dataloaders[ph]:
                 inputs,labels=data
@@ -115,14 +119,13 @@ def train_model(model,criterion,optimizer,scheduler,n_epochs=10):
                 output=model(inputs)
                 _,pred=torch.max(output,1)
                 loss=criterion(output,labels)
-                b+=16
-                if b%220==0:
-                    print('#',end=' ')
+                b+=10
+                sys.stdout.write('\rProgress : ' +str(round(100*(b/c),4)) +str( ' %'))
                 if ph=='train':
                     loss.backward()
                     optimizer.step()     
                 running_loss+=loss.item()
-                correct+=torch.sum(pred==labels.data)
+                correct+=torch.sum(pred==labels.data).item()
             print()
             epoch_loss=running_loss/dataset_size[ph]
             epoch_acc=correct/dataset_size[ph]
@@ -141,7 +144,7 @@ def train_model(model,criterion,optimizer,scheduler,n_epochs=10):
     model.load_state_dict(best_model_wts)
     return model
 
-model=train_model(model,criterion,optimizer,exp_lr_scheduler,n_epochs=2)
+model=train_model(model,criterion,optimizer,exp_lr_scheduler,n_epochs=1)
 
 torch.cuda.memory_allocated()
 torch.cuda.empty_cache()
