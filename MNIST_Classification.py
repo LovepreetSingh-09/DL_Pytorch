@@ -74,10 +74,13 @@ output=model(data)
 print(output.size()) 
 print(data.size())
 print(target.size());target
+# max function returns max values with max index 
 preds=output.data.max(dim=1,keepdim=True)[1];preds
 r=preds.eq(target.data.view_as(preds)).cpu().sum().numpy()
 r/50
-f=torch.sum(preds==target.data).numpy()
+loss=F.nll_loss(output,target).data;loss
+loss/5
+f=torch.sum(preds==target.data).cpu().numpy()
 f/5
 
 def fit(epoch,model,dataloader,optimizer,phase='training'):
