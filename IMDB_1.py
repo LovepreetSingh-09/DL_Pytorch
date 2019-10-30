@@ -36,7 +36,7 @@ len(train)
 help(vars)
 vars(train[0])
 
-TEXT.build_vocab(train,vectors=torchtext.vocab.GloVe(name='6B',dim=300),max_size=10000,min_freq=10)
+TEXT.build_vocab(train,vectors=torchtext.vocab.GloVe(name='6B',dim=50),max_size=10000,min_freq=10)
 LABEL.build_vocab(train)
 
 TEXT.vocab
@@ -49,6 +49,7 @@ train_iter.repeat=False
 test_iter.repeat=False
 next(iter(train_iter))
 b=set()
+
 vars(train[0])['text']
 for i in range(25000):
     for word in vars(train[i])['text']:
