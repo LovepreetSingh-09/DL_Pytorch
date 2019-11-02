@@ -4,7 +4,7 @@ Created on Tue Oct 29 20:31:19 2019
 
 @author: user
 """
-
+import tensorflow as tf
 import torchtext
 import pandas as pd
 import numpy as np
