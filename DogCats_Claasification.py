@@ -1,4 +1,4 @@
-import torch
+/import torch
 from torch import optim
 from torch import nn
 from torch.autograd import Variable
